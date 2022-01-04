@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
 
 import { Observable, Subject } from 'rxjs';
 
@@ -8,6 +9,8 @@ import {
 
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
+import { AppState } from '../store-app';
+import { addLogStart } from '../store-hero';
 
 @Component({
   selector: 'app-hero-search',
@@ -18,10 +21,11 @@ export class HeroSearchComponent implements OnInit {
   heroes$!: Observable<Hero[]>;
   private searchTerms = new Subject<string>();
 
-  constructor(private heroService: HeroService) {}
+  constructor(private heroService: HeroService, private store: Store<AppState>) {}
 
   // Push a search term into the observable stream.
   search(term: string): void {
+    this.store.dispatch(addLogStart({text: `HeroSearchComponent.search ${term}`}));
     this.searchTerms.next(term);
   }
 

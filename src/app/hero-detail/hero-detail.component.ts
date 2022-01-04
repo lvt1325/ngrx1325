@@ -4,6 +4,9 @@ import { Location } from '@angular/common';
 
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
+import { Store } from '@ngrx/store';
+import { AppState } from '../store-app';
+import { addLogStart } from '../store-hero';
 
 @Component({
   selector: 'app-hero-detail',
@@ -16,7 +19,8 @@ export class HeroDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private heroService: HeroService,
-    private location: Location
+    private location: Location,
+    private store: Store<AppState>
   ) {}
 
   ngOnInit(): void {
@@ -25,15 +29,18 @@ export class HeroDetailComponent implements OnInit {
 
   getHero(): void {
     const id = parseInt(this.route.snapshot.paramMap.get('id')!, 10);
+    this.store.dispatch(addLogStart({text: `HeroDetailComponent.getHero ${id}`}));
     this.heroService.getHero(id)
       .subscribe(hero => this.hero = hero);
   }
 
   goBack(): void {
+    this.store.dispatch(addLogStart({text: `HeroDetailComponent.goBack`}));
     this.location.back();
   }
 
   save(): void {
+    this.store.dispatch(addLogStart({text: `HeroDetailComponent.save`}));
     if (this.hero) {
       this.heroService.updateHero(this.hero)
         .subscribe(() => this.goBack());

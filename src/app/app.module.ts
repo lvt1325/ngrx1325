@@ -14,6 +14,9 @@ import { HeroDetailComponent } from './hero-detail/hero-detail.component';
 import { HeroesComponent } from './heroes/heroes.component';
 import { HeroSearchComponent } from './hero-search/hero-search.component';
 import { LogComponent } from './log/log.component';
+import { StoreModule } from '@ngrx/store';
+import { appEffect, appReducer } from './store-app';
+import { EffectsModule } from '@ngrx/effects';
 
 @NgModule({
   imports: [
@@ -27,7 +30,14 @@ import { LogComponent } from './log/log.component';
     // Remove it when a real server is ready to receive requests.
     HttpClientInMemoryWebApiModule.forRoot(
       InMemoryDataService, { dataEncapsulation: false }
-    )
+    ),
+    StoreModule.forRoot(appReducer, {
+      runtimeChecks: {
+        strictStateImmutability: true, // Default
+        strictActionImmutability: true // Default
+      }
+    }),
+    EffectsModule.forRoot(appEffect),
   ],
   declarations: [
     AppComponent,

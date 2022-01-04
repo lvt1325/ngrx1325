@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { MessageService } from '../message.service';
+import { Store } from '@ngrx/store';
+import { AppState } from '../store-app';
+import { clearLog, selectTopNLogs } from '../store-hero';
 
 @Component({
   selector: 'app-log',
@@ -8,9 +10,17 @@ import { MessageService } from '../message.service';
 })
 export class LogComponent implements OnInit {
 
-  constructor(public messageService: MessageService) {}
+  logs: string[] = [];
+
+  constructor(private store: Store<AppState>) {}
 
   ngOnInit() {
+    this.store.select(selectTopNLogs(5)).subscribe(logs => {
+      this.logs = logs;
+    })
   }
 
+  clearLog() {
+    this.store.dispatch(clearLog());
+  }
 }
