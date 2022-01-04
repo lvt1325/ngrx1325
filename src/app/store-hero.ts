@@ -21,39 +21,6 @@ export const addLogFail = createAction('add log fail', props<{ error: string }>(
 export const clearLog = createAction('clear log');
 //#endregion
 
-//#region EFFECT 
-@Injectable()
-export class MyHeroEffects {
-    constructor(private actions$: Actions, private store: Store<AppState>) { }
-
-    addLog$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(addLogStart),
-            // if need to inspect the current state or a slice of state
-            withLatestFrom(this.store.select(selectMyHeroState()), this.store.select(selectTopNLogs(1))),
-            switchMap(([action, state, lastLog]) => {
-            // switchMap: just process for the latest event, all of previous one is canceled
-            // mergeMap: use it if each event need to process independently
-                console.log('state', state);
-                console.log('lastLog', lastLog);
-                return of(action.text) // or call api to do something on server
-                    .pipe(
-                        // server done
-                        mergeMap((returnedText) => {
-                            return of(addLogSuccess({ text: returnedText }));
-                            // Return multiple actions in order:
-                            // return of(addLogSuccess({ text: returnedText }), addLogSuccess({ text: returnedText }));
-                        }),
-                        // server error
-                        catchError(err => {
-                            return of(addLogFail({ error: err }));
-                        })
-                    );
-            })
-        )
-    )
-}
-
 //#region REDUCER
 export const MyHeroReducer = createReducer(myHeroStateInition,
     on(addLogSuccess, (state, action): MyHeroState => {
@@ -80,3 +47,36 @@ export const selectTopNLogs = (topN: number) => createSelector(selectMyHeroState
     return state.logs.slice(state.logs.length - topN, state.logs.length);
 })
 //#endregion
+
+//#region EFFECT 
+@Injectable()
+export class MyHeroEffects {
+    constructor(private actions$: Actions, private store: Store<AppState>) { }
+
+    addLog$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(addLogStart),
+            // if need to inspect the current state or a slice of state
+            withLatestFrom(this.store.select(selectMyHeroState()), this.store.select(selectTopNLogs(1))),
+            switchMap(([action, state, lastLog]) => {
+            // switchMap: just process for the latest event, all of previous one is canceled
+            // mergeMap: use it if each event need to process independently
+                console.log('state', state);
+                console.log('lastLog', lastLog);
+                return of(action.text) // or call api to do something on server
+                    .pipe(
+                        // server done
+                        mergeMap((returnedText) => {
+                            return of(addLogSuccess({ text: returnedText }));
+                            // Return multiple actions in order:
+                            // return of(addLogSuccess({ text: returnedText }), addLogFail({ error: returnedText }));
+                        }),
+                        // server error
+                        catchError(err => {
+                            return of(addLogFail({ error: err }));
+                        })
+                    );
+            })
+        )
+    )
+}
