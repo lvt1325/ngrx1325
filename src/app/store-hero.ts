@@ -23,10 +23,6 @@ export const fetchAllHeroesStart = createAction('fetchAllHeroesStart');
 export const fetchAllHeroesSuccess = createAction('fetchAllHeroesSuccess', props<{ heroes: Hero[] }>());
 export const fetchAllHeroesFail = createAction('fetchAllHeroesFail', props<{ error: string }>());
 
-export const fetchOneHeroStart = createAction('fetchHeroStart', props<{ heroId: number }>());
-export const fetchOneHeroSuccess = createAction('fetchHeroSuccess', props<{ hero: Hero }>());
-export const fetchOneHeroFail = createAction('fetchHeroFail', props<{ error: string }>());
-
 export const addHeroStart = createAction('addHeroStart', props<{ hero: Hero }>());
 export const addHeroSuccess = createAction('addHeroSuccess', props<{ hero: Hero }>());
 export const addHeroFail = createAction('addHeroFail', props<{ error: string }>());
@@ -43,11 +39,6 @@ export const MyHeroReducer = createReducer(myHeroStateInition,
         console.log(`Action: ${action.type}`, newState);
         return newState;
     }),
-    on(fetchOneHeroSuccess, (state, action): MyHeroState => {
-        const newState = { ...state, selectedHero: action.hero }
-        console.log(`Action: ${action.type}`, newState);
-        return newState;
-    }),
     on(addHeroSuccess, (state, action): MyHeroState => {
         const clonedHeroes = state.heroes.slice();
         clonedHeroes.push(action.hero);
@@ -57,15 +48,13 @@ export const MyHeroReducer = createReducer(myHeroStateInition,
     }),
     on(updateHeroSuccess, (state, action): MyHeroState => {
         const updatedHeroIndex = state.heroes.findIndex(hero => hero.id === action.hero.id);
+        let clonedHeroes = state.heroes.slice();
+        clonedHeroes[updatedHeroIndex] = {...clonedHeroes[updatedHeroIndex],
+            name: action.hero.name
+        }
         const newState = {
             ...state,
-            heroes: {
-                ...state.heroes,
-                [updatedHeroIndex]: {
-                    ...state.heroes[updatedHeroIndex],
-                    name: action.hero.name
-                }
-            }
+            heroes: clonedHeroes
         }
         console.log(`Action: ${action.type}`, newState);
         return newState;
@@ -83,6 +72,9 @@ export const selectTopNHeroes = (topN: number) => createSelector(selectMyHeroSta
 })
 export const selectAllHeroes = () => createSelector(selectMyHeroStateStoreFeature, (state: MyHeroState): Hero[] => {
     return state.heroes;
+})
+export const selectHeroById = (id: number) => createSelector(selectMyHeroStateStoreFeature, (state: MyHeroState): Hero => {
+    return state.heroes.filter(hero => hero.id === id)[0];
 })
 export const selectHeroesWithFilter = (filterText: string) => createSelector(selectMyHeroStateStoreFeature, (state: MyHeroState): Hero[] => {
     return state.heroes.filter(hero => hero.name.includes(filterText));
@@ -122,25 +114,6 @@ export class MyHeroEffects {
         )
     );
 
-    fetchOneHero$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(fetchOneHeroStart),
-            switchMap(action => {
-                return this.heroService.getHero(action.heroId)
-                    .pipe(
-                        // server return
-                        mergeMap(returnedHero => {
-                            return of(fetchOneHeroSuccess({ hero: returnedHero }));
-                        }),
-                        // server error
-                        catchError(err => {
-                            return of(fetchOneHeroFail({ error: err }));
-                        })
-                    );
-            })
-        )
-    );
-
     addHero$ = createEffect(() =>
         this.actions$.pipe(
             ofType(addHeroStart),
@@ -167,8 +140,8 @@ export class MyHeroEffects {
                 return this.heroService.updateHero(action.hero)
                     .pipe(
                         // server return
-                        mergeMap(updatedHero => {
-                            return of(updateHeroSuccess({ hero: updatedHero }));
+                        mergeMap(() => {
+                            return of(updateHeroSuccess({ hero: action.hero }));
                         }),
                         // server error
                         catchError(err => {
