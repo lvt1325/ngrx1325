@@ -6,7 +6,7 @@ import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
 import { Store } from '@ngrx/store';
 import { AppState } from '../store-app';
-import { addLogStart } from '../store-hero';
+import { addLogStart } from '../store-log';
 
 @Component({
   selector: 'app-hero-detail',

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AppState } from '../store-app';
-import { clearLog, selectTopNLogs } from '../store-hero';
+import { clearLog, selectTopNLogs } from '../store-log';
 
 @Component({
   selector: 'app-log',
