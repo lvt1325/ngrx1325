@@ -4,6 +4,7 @@ import { Store } from '@ngrx/store';
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
 import { AppState } from '../store-app';
+import { addHeroStart, selectAllHeroes } from '../store-hero';
 import { addLogStart } from '../store-log';
 
 @Component({
@@ -14,32 +15,23 @@ import { addLogStart } from '../store-log';
 export class HeroesComponent implements OnInit {
   heroes: Hero[] = [];
 
-  constructor(private heroService: HeroService, private store: Store<AppState>) { }
+  constructor(private store: Store<AppState>) { }
 
   ngOnInit(): void {
     this.getHeroes();
   }
 
   getHeroes(): void {
-    this.store.dispatch(addLogStart({text: 'HeroesComponent.getHeroes'}));
-    this.heroService.getHeroes()
-    .subscribe(heroes => this.heroes = heroes);
+    this.store.dispatch(addLogStart({ text: 'HeroesComponent.getHeroes' }));
+    this.store.select(selectAllHeroes()).subscribe(heroes => {
+      this.heroes = heroes;
+    })
   }
 
   add(name: string): void {
-    this.store.dispatch(addLogStart({text: `HeroesComponent.add ${name}`}));
+    this.store.dispatch(addLogStart({ text: `HeroesComponent.add ${name}` }));
     name = name.trim();
     if (!name) { return; }
-    this.heroService.addHero({ name } as Hero)
-      .subscribe(hero => {
-        this.heroes.push(hero);
-      });
+    this.store.dispatch(addHeroStart({hero: {name: name}}));
   }
-
-  delete(hero: Hero): void {
-    this.store.dispatch(addLogStart({text: `HeroesComponent.delete ${hero.name}`}));
-    this.heroes = this.heroes.filter(h => h !== hero);
-    this.heroService.deleteHero(hero.id).subscribe();
-  }
-
 }

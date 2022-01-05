@@ -85,7 +85,7 @@ export const selectAllHeroes = () => createSelector(selectMyHeroStateStoreFeatur
     return state.heroes;
 })
 export const selectHeroesWithFilter = (filterText: string) => createSelector(selectMyHeroStateStoreFeature, (state: MyHeroState): Hero[] => {
-    return state.heroes.slice();
+    return state.heroes.filter(hero => hero.name.includes(filterText));
 })
 //#endregion
 

@@ -10,6 +10,7 @@ import {
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
 import { AppState } from '../store-app';
+import { selectHeroesWithFilter } from '../store-hero';
 import { addLogStart } from '../store-log';
 
 @Component({
@@ -38,7 +39,7 @@ export class HeroSearchComponent implements OnInit {
       distinctUntilChanged(),
 
       // switch to new search observable each time the term changes
-      switchMap((term: string) => this.heroService.searchHeroes(term)),
+      switchMap((term: string) => this.store.select(selectHeroesWithFilter(term))),
     );
   }
 }
