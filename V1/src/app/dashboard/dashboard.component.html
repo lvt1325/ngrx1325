@@ -1,5 +1,5 @@
 <fieldset>
-  <legend>dashboard.component</legend>
+  <legend><b>{{'dashboard.component' | uppercase}}</b></legend>
   <h3>3 Latest Heroes</h3>
   <div class="heroes-menu">
     <a *ngFor="let hero of heroes" routerLink="/detail/{{hero.id}}">
