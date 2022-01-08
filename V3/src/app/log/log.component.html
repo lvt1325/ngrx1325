@@ -1,0 +1,5 @@
+<fieldset>
+  <legend><b>{{'log.component' | uppercase}}</b></legend>
+  <button class="clear" (click)="clearLog()">Clear Log</button>
+  <div *ngFor='let log of logs'> {{log}} </div>
+</fieldset>
