@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 
 import { Hero } from '../hero';
@@ -12,27 +12,19 @@ import { addLogStart } from '../store-log';
   templateUrl: './heroes.component.html',
   styleUrls: ['./heroes.component.css']
 })
+// V2 Component as Presentation Component
 export class HeroesComponent implements OnInit {
-  heroes: Hero[] = [];
+  @Input() heroes: Hero[] = [];
+  @Output() onClickButtonAddHero = new EventEmitter<{heroName: string}>()
 
-  constructor(private store: Store<AppState>) { }
+  constructor() { }
 
   ngOnInit(): void {
-    this.getHeroes();
-  }
-
-  getHeroes(): void {
-    this.store.dispatch(addLogStart({ text: 'HeroesComponent.getHeroes' }));
-    this.store.select(selectAllHeroes()).subscribe(heroes => {
-      this.heroes = heroes;
-    })
   }
 
   add(name: string): void {
-    this.store.dispatch(addLogStart({ text: `HeroesComponent.add ${name}` }));
-    name = name.trim();
     if (name) {
-      this.store.dispatch(addHeroStart({hero: {name: name}}));
+      this.onClickButtonAddHero.emit({heroName: name})
     } else {
       alert('Please provide hero name');
     }

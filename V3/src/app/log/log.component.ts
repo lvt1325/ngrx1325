@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AppState } from '../store-app';
 import { clearLog, selectTopNLogs } from '../store-log';
@@ -8,19 +8,18 @@ import { clearLog, selectTopNLogs } from '../store-log';
   templateUrl: './log.component.html',
   styleUrls: ['./log.component.css']
 })
+// V2 Component as Presentation Component
 export class LogComponent implements OnInit {
 
-  logs: string[] = [];
+  @Input() logs: string[] = [];
+  @Output() onClickButtonClearLog = new EventEmitter();
 
-  constructor(private store: Store<AppState>) {}
+  constructor() {}
 
   ngOnInit() {
-    this.store.select(selectTopNLogs(5)).subscribe(logs => {
-      this.logs = logs;
-    })
   }
 
   clearLog() {
-    this.store.dispatch(clearLog());
+    this.onClickButtonClearLog.emit();
   }
 }

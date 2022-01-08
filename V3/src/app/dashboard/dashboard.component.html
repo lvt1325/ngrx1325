@@ -6,6 +6,6 @@
       {{hero.name}}
     </a>
   </div>
-  <app-heroes></app-heroes>
+  <app-heroes [heroes]="allHeroes" (onClickButtonAddHero)="addHero($event)"></app-heroes>
   <app-hero-search></app-hero-search>
 </fieldset>
