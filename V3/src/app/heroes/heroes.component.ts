@@ -31,7 +31,10 @@ export class HeroesComponent implements OnInit {
   add(name: string): void {
     this.store.dispatch(addLogStart({ text: `HeroesComponent.add ${name}` }));
     name = name.trim();
-    if (!name) { return; }
-    this.store.dispatch(addHeroStart({hero: {name: name}}));
+    if (name) {
+      this.store.dispatch(addHeroStart({hero: {name: name}}));
+    } else {
+      alert('Please provide hero name');
+    }
   }
 }
