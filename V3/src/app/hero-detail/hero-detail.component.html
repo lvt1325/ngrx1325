@@ -10,4 +10,8 @@
   <button (click)="goBack()">go back</button>
   <button (click)="save()">save</button>
 </div>
+<div>Messages</div>
+<ul>
+  <li *ngFor="let m of topMessages">{{m}}</li>
+</ul>
 </fieldset>
