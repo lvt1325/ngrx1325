@@ -9,7 +9,7 @@ import { clearLog, selectTopNLogs } from './store-log';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title = 'Tour of Heroes V2';
+  title = 'Tour of Heroes V3';
   logs: string[] = [];
   
   constructor(private store: Store<AppState>) {}
