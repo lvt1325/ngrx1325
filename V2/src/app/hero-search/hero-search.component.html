@@ -2,10 +2,10 @@
   <legend><b>{{'hero-search.component' | uppercase}}</b></legend>
 <div id="search-component">
   <label for="search-box">Hero Search</label>
-  <input #searchBox id="search-box" (input)="search(searchBox.value)" />
+  <input #searchBox id="search-box" [(ngModel)]="searchTerm" (input)="search(searchBox.value)" />
 
   <ul class="search-result">
-    <li *ngFor="let hero of heroes$ | async" >
+    <li *ngFor="let hero of filteredHeroes" >
       <a routerLink="/detail/{{hero.id}}">
         {{hero.name}}
       </a>

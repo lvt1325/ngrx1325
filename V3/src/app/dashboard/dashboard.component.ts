@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
 import { AppState } from '../store-app';
-import { addHeroStart, fetchAllHeroesStart, selectAllHeroes, selectTopNHeroes } from '../store-hero';
+import { addHeroStart, fetchAllHeroesStart, selectAllHeroes, selectHeroesWithFilter, selectTopNHeroes } from '../store-hero';
 import { addLogStart } from '../store-log';
 
 @Component({
@@ -14,6 +14,7 @@ import { addLogStart } from '../store-log';
 export class DashboardComponent implements OnInit {
   heroes: Hero[] = [];
   allHeroes: Hero[] = [];
+  filteredHeroes: Hero[] = [];
 
   constructor(private store: Store<AppState>) { }
 
@@ -29,7 +30,11 @@ export class DashboardComponent implements OnInit {
   }
 
   addHero(data: {heroName: string}) {
-    this.store.dispatch(addLogStart({ text: `HeroesComponent.add ${data.heroName}` }));
+    this.store.dispatch(addLogStart({ text: `DashboardComponent.addHero ${data.heroName}` }));
     this.store.dispatch(addHeroStart({hero: {name: data.heroName}}));
+  }
+
+  doFilter(text: string) {
+    this.store.select(selectHeroesWithFilter(text)).subscribe(heroes => this.filteredHeroes = heroes);
   }
 }

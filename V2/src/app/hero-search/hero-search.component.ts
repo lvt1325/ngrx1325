@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 
 import {
-   debounceTime, distinctUntilChanged, switchMap
- } from 'rxjs/operators';
+  debounceTime, distinctUntilChanged, switchMap
+} from 'rxjs/operators';
 
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
@@ -16,22 +16,25 @@ import { addLogStart } from '../store-log';
 @Component({
   selector: 'app-hero-search',
   templateUrl: './hero-search.component.html',
-  styleUrls: [ './hero-search.component.css' ]
+  styleUrls: ['./hero-search.component.css']
 })
 export class HeroSearchComponent implements OnInit {
   heroes$!: Observable<Hero[]>;
-  private searchTerms = new Subject<string>();
+  private searchTerms = new BehaviorSubject<string>('');
+  @Input() searchTerm: string = '';
+  @Input() filteredHeroes?: Hero[] = undefined;
+  @Output() doFilterHero = new EventEmitter<string>();
 
-  constructor(private heroService: HeroService, private store: Store<AppState>) {}
+  constructor(private store: Store<AppState>) { }
 
   // Push a search term into the observable stream.
   search(term: string): void {
-    this.store.dispatch(addLogStart({text: `HeroSearchComponent.search ${term}`}));
+    this.store.dispatch(addLogStart({ text: `HeroSearchComponent.search ${term}` }));
     this.searchTerms.next(term);
   }
 
   ngOnInit(): void {
-    this.heroes$ = this.searchTerms.pipe(
+    this.searchTerms.pipe(
       // wait 300ms after each keystroke before considering the term
       debounceTime(300),
 
@@ -39,7 +42,10 @@ export class HeroSearchComponent implements OnInit {
       distinctUntilChanged(),
 
       // switch to new search observable each time the term changes
-      switchMap((term: string) => this.store.select(selectHeroesWithFilter(term))),
-    );
+      switchMap((term: string) => {
+        return of(this.doFilterHero.emit(term));
+      })
+    ).subscribe();
+    this.search(this.searchTerm);
   }
 }

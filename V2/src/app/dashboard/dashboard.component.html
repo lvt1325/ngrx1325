@@ -7,5 +7,5 @@
     </a>
   </div>
   <app-heroes [heroes]="allHeroes" (onClickButtonAddHero)="addHero($event)"></app-heroes>
-  <app-hero-search></app-hero-search>
+  <app-hero-search searchTerm='a' [filteredHeroes]='filteredHeroes' (doFilterHero)="doFilter($event)"></app-hero-search>
 </fieldset>
